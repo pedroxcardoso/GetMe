@@ -1,0 +1,16 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["src"],
+  "locale": "pt-BR",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": ["Form", "Scrollbar"],
+  "ownership": {},
+  "requiredCommands": ["typecheck", "build"],
+  "commands": {
+    "typecheck": "npm run typecheck",
+    "build": "npm run build"
+  },
+  "evidence": {
+    "downloadLifecycle": "UX-CONTRACT.md"
+  }
+}
