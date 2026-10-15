@@ -57,7 +57,7 @@ const URL_PLACEHOLDERS: Record<Provider, string> = {
 const DEFAULT_SETTINGS: AppSettings = {
   downloadPath: "",
   openAfterDownload: false,
-  theme: "light",
+  theme: "dark",
   toolPaths: { ytDlp: "", ffmpeg: "" },
 };
 
@@ -604,25 +604,21 @@ function App() {
           <div className="page-content provider-page">
             <div className="page-title-row">
               <div className="page-title-icon">{providerIcon(page)}</div>
-              <div><span className="eyebrow eyebrow-muted">SUA PRÓXIMA PARADA</span><h2>{providerName(page)}</h2></div>
+              <div><h2>{providerName(page)}</h2></div>
               <span className="page-ready-tag"><span className="tiny-pixel" /> PRONTO PRA GUARDAR</span>
             </div>
             {!toolsReady && (
               <div className="setup-callout" role="status">
                 <span className="setup-callout-icon"><Settings2 aria-hidden="true" size={19} /></span>
-                <div><strong>Uma preparação rapidinha</strong><p>O GETME precisa do yt-dlp e do FFmpeg para transformar links em arquivos.</p></div>
-                <button className="soft-button" onClick={() => navigate("settings")} type="button">Configurar motores <ArrowRight size={15} /></button>
+                <div><strong>Faltam os motores</strong><p>yt-dlp e FFmpeg transformam links em arquivos.</p></div>
+                <button className="setup-link" onClick={() => navigate("settings")} type="button">Configurar <ArrowRight size={15} /></button>
               </div>
             )}
 
             <section className="download-panel pixel-card" aria-labelledby="download-title">
-              <div className="section-heading">
-                <div className="step-badge">01</div>
-                <div><span className="eyebrow eyebrow-muted">UM LINK, UM ARQUIVO</span><h3 id="download-title">Comece por aqui</h3></div>
-                <span className="section-spark" aria-hidden="true">✦</span>
-              </div>
+              <h3 className="sr-only" id="download-title">Baixar de {providerName(page)}</h3>
               <form noValidate onSubmit={handleSubmit}>
-                <label className="field-label" htmlFor="media-url">Cole o link de {providerName(page)}</label>
+                <label className="field-label" htmlFor="media-url">LINK</label>
                 <div className={`url-field ${fieldError ? "field-invalid" : ""}`}>
                   <Link2 aria-hidden="true" className="url-field-icon" size={18} />
                   <input
@@ -644,21 +640,21 @@ function App() {
                   {url && <button aria-label="Limpar link" className="url-action clear-url" onClick={() => { setUrl(""); setFieldError(""); urlRef.current?.focus(); }} type="button"><X size={15} /></button>}
                   <button className="url-action paste-action" onClick={() => void handlePaste()} type="button"><span>Colar</span><ArrowDownToLine aria-hidden="true" size={14} /></button>
                 </div>
-                {fieldError ? <p className="field-error" id="url-error" role="alert"><CircleAlert aria-hidden="true" size={14} /> {fieldError}</p> : <p className="field-help" id="url-help"><span className="help-pixel" aria-hidden="true" />{clipboardMessage || "O link precisa ser público e desta plataforma."}</p>}
+                {fieldError ? <p className="field-error" id="url-error" role="alert"><CircleAlert aria-hidden="true" size={14} /> {fieldError}</p> : <p className="field-help" id="url-help"><span className="help-pixel" aria-hidden="true" />{clipboardMessage || `Precisa ser público e do ${providerName(page)}.`}</p>}
 
                 <div className="option-divider" />
                 <div className="option-group">
-                  <div className="option-title"><span className="step-badge step-badge-small">02</span><div><strong>Escolha o formato</strong><small>Qual caixinha combina com você?</small></div></div>
+                  <div className="option-title"><div><strong>FORMATO</strong></div></div>
                   <div className="selection-grid" role="group" aria-label="Formato do arquivo">
-                    <SelectionCard active={format === "mp4"} description="Vídeo com imagem" icon={<FileVideo2 aria-hidden="true" size={22} />} label="MP4" onClick={() => setFormat("mp4")} tone="mint" />
-                    {page === "youtube" && <SelectionCard active={format === "mp3"} description="Só o áudio" icon={<AudioLines aria-hidden="true" size={22} />} label="MP3" onClick={() => setFormat("mp3")} tone="butter" />}
+                    <SelectionCard active={format === "mp4"} description="Vídeo" icon={<FileVideo2 aria-hidden="true" size={22} />} label="MP4" onClick={() => setFormat("mp4")} tone="mint" />
+                    {page === "youtube" && <SelectionCard active={format === "mp3"} description="Áudio" icon={<AudioLines aria-hidden="true" size={22} />} label="MP3" onClick={() => setFormat("mp3")} tone="butter" />}
                     {page !== "youtube" && <div className="format-note"><Video aria-hidden="true" size={17} /><span>Esta plataforma salva vídeos em MP4.</span></div>}
                   </div>
                 </div>
 
                 {format === "mp4" && (
                   <div className="option-group quality-group">
-                    <div className="option-title"><span className="step-badge step-badge-small">03</span><div><strong>Qualidade do vídeo</strong><small>A maior qualidade disponível até este limite.</small></div></div>
+                    <div className="option-title"><div><strong>QUALIDADE MÁXIMA</strong></div></div>
                     <div className="quality-choices" role="group" aria-label="Qualidade do vídeo">
                       {availableResolutions.map((value) => (
                         <button aria-pressed={resolution === value} className={`quality-choice ${resolution === value ? "is-selected" : ""}`} key={value} onClick={() => setResolution(value)} type="button">
@@ -670,7 +666,7 @@ function App() {
                 )}
 
                 <div className="option-group destination-group">
-                  <div className="option-title"><span className={`step-badge step-badge-small ${format === "mp3" ? "step-muted" : ""}`}>{format === "mp3" ? "03" : "04"}</span><div><strong>Onde guardar?</strong><small>Você pode trocar essa pasta em qualquer momento.</small></div></div>
+                  <div className="option-title"><div><strong>SALVAR EM</strong></div></div>
                   <div className="destination-row">
                     <span className="destination-icon"><Folder aria-hidden="true" size={18} /></span>
                     <span className="destination-path" title={settings.downloadPath}>{shortPath(settings.downloadPath)}</span>
@@ -680,8 +676,8 @@ function App() {
                 </div>
 
                 <div className="submit-row">
-                  <button className="download-button" disabled={!toolsReady || isStarting} type={!toolsReady ? "button" : "submit"} onClick={!toolsReady ? () => navigate("settings") : undefined}>
-                    {isStarting ? <><LoaderCircle aria-hidden="true" className="spin" size={17} /> Preparando…</> : !toolsReady ? <><Settings2 aria-hidden="true" size={17} /> Configurar para baixar</> : <><ArrowDownToLine aria-hidden="true" size={18} /> Baixar agora <ArrowRight aria-hidden="true" size={16} /></>}
+                  <button aria-label={!toolsReady ? "Configurar motores antes de baixar" : "Baixar arquivo"} className="download-button" disabled={isStarting} type={!toolsReady ? "button" : "submit"} onClick={!toolsReady ? () => navigate("settings") : undefined}>
+                    {isStarting ? <><LoaderCircle aria-hidden="true" className="spin" size={17} /> Preparando…</> : <><ArrowDownToLine aria-hidden="true" size={18} /> Baixar</>}
                   </button>
                   <span className="size-note"><ShieldCheck aria-hidden="true" size={14} /> Salvo direto no seu computador</span>
                 </div>
@@ -759,7 +755,7 @@ function App() {
                 <div className="step-badge"><Settings2 aria-hidden="true" size={17} /></div>
                 <div><span className="eyebrow eyebrow-muted">MOTORES LOCAIS</span><h3 id="engines-title">Só falta preparar uma vez</h3></div>
               </div>
-              <p className="settings-intro">O yt-dlp conversa com as plataformas. O FFmpeg monta MP4 e converte o áudio para MP3. O GETME usa versões instaladas no seu computador; não baixa executáveis escondido.</p>
+              <p className="settings-intro">O yt-dlp conversa com as plataformas. O FFmpeg monta MP4 e converte o áudio para MP3. Você pode baixar os dois junto com o GETME pelo instalador, ou selecionar os arquivos que já tem.</p>
               <div className="tool-grid">
                 <ToolCard title="yt-dlp" status={capabilities?.ytDlp} description="Reconhece links e busca o vídeo ou áudio." pathValue={capabilities?.ytDlp.path || settings.toolPaths.ytDlp} onChoose={() => void chooseToolPath("ytDlp")} onSetup={() => void openSetupPage("ytDlp")} />
                 <ToolCard title="FFmpeg" status={capabilities?.ffmpeg} description="Une faixas de vídeo e transforma áudio em MP3." pathValue={capabilities?.ffmpeg.path || settings.toolPaths.ffmpeg} onChoose={() => void chooseToolPath("ffmpeg")} onSetup={() => void openSetupPage("ffmpeg")} />

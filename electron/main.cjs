@@ -40,7 +40,8 @@ function defaultSettings() {
   return {
     downloadPath: app.getPath("downloads"),
     openAfterDownload: false,
-    theme: "light",
+    theme: "dark",
+    themePreferenceVersion: 2,
     toolPaths: { ytDlp: "", ffmpeg: "" },
   };
 }
@@ -59,7 +60,7 @@ async function readSettings() {
   return {
     downloadPath: typeof stored.downloadPath === "string" ? stored.downloadPath : fallback.downloadPath,
     openAfterDownload: stored.openAfterDownload === true,
-    theme: stored.theme === "dark" ? "dark" : "light",
+    theme: stored.themePreferenceVersion === 2 && stored.theme === "light" ? "light" : "dark",
     toolPaths: {
       ytDlp: typeof stored.toolPaths?.ytDlp === "string" ? stored.toolPaths.ytDlp : "",
       ffmpeg: typeof stored.toolPaths?.ffmpeg === "string" ? stored.toolPaths.ffmpeg : "",
@@ -389,6 +390,7 @@ function installHandlers() {
     const next = { ...current };
     if (typeof patch.openAfterDownload === "boolean") next.openAfterDownload = patch.openAfterDownload;
     if (patch.theme === "light" || patch.theme === "dark") next.theme = patch.theme;
+    next.themePreferenceVersion = 2;
     settingsWriteQueue = settingsWriteQueue.catch(() => {}).then(() => writeJsonAtomically("settings.json", next));
     await settingsWriteQueue;
     return next;
@@ -473,7 +475,7 @@ function installHandlers() {
 
 async function saveSettings(patch) {
   const current = await readSettings();
-  const next = { ...current, ...patch, toolPaths: { ...current.toolPaths, ...(patch.toolPaths || {}) } };
+  const next = { ...current, ...patch, themePreferenceVersion: 2, toolPaths: { ...current.toolPaths, ...(patch.toolPaths || {}) } };
   settingsWriteQueue = settingsWriteQueue.catch(() => {}).then(() => writeJsonAtomically("settings.json", next));
   await settingsWriteQueue;
   return next;
@@ -523,8 +525,9 @@ function createWindow() {
     height: 874,
     minWidth: 360,
     minHeight: 680,
-    backgroundColor: "#FFF4F8",
+    backgroundColor: "#000000",
     title: "GETME",
+    icon: path.join(__dirname, "assets", "getme.ico"),
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
