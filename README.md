@@ -1,4 +1,4 @@
-# GETME 🎀
+# GETME
 
 GETME V1 é um app desktop compacto, em pixel art, para baixar vídeos e músicas de links que você tem autorização para salvar. A aparência escura do robô é o tema inicial; Sol/Lua alterna entre os temas e guarda sua preferência.
 
